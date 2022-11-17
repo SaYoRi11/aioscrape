@@ -26,8 +26,8 @@ def process(input_file, output_file='aioscrape/csv/quantities.csv'):
                 for q in quantities:
                     new_rows.append({
                         'name': row[0],
-                        'amount': q[0].strip(),
-                        'unit': q[1].strip()
+                        'amount': q[0],
+                        'unit': q[1]
                     })
             
     
@@ -39,7 +39,7 @@ def process(input_file, output_file='aioscrape/csv/quantities.csv'):
 
 def parse_quantities(text):
     matches = re.findall(QUANTITY_REGEX, text)
-    return [match for match in matches if match[1].lower() in units]
+    return [(match[0].strip(), match[1].strip()) for match in matches if match[1].lower() in units]
 
 
 if __name__ == '__main__':
