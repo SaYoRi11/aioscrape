@@ -4,22 +4,11 @@ from urls import urls
 from bs4 import BeautifulSoup
 from pprint import pprint
 
-async def get_html(url, session):
+
+async def scrape(url, session):
     resp = await session.request(method="GET", url=url)
     resp.raise_for_status()
-    html = await resp.text()
-    return html
-
-# Get internal links from a url
-async def scrape(url, session):
-    try:
-        html = await get_html(url, session)
-    except Exception as e:
-        print(e)
-    else:
-        soup = BeautifulSoup(html, 'lxml')
-        links = [link['href'] for link in soup.find_all('a', href = True) if link['href'].startswith('/')]
-        return links
+    return resp
 
 
 async def start():
@@ -29,11 +18,20 @@ async def start():
             task = asyncio.create_task(scrape(url, session))
             task.idx = url
             tasks.append(task)
-        done, _ = await asyncio.wait(tasks)
-        results = {
-            task.idx: task.result() for task in done
-        }
 
+        done, _ = await asyncio.wait(tasks)
+        results = {}
+        exceptions = {}
+        for task in done:
+            exc = task.exception()
+            if exc:
+                exceptions[task.idx] = exc
+            else:
+                resp = task.result()
+                html = await resp.text()
+                results[task.idx] = html
+
+        pprint(exceptions)
         pprint(results)
 
 if __name__ == '__main__':
