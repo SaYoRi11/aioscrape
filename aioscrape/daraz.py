@@ -1,5 +1,7 @@
-keys = ['name', 'productUrl', 'originalPrice', 'price', 'discount', 'ratingScore',
-        'review' , 'description', 'brandName', 'sellerName']
+# keys = ['name', 'productUrl', 'originalPrice', 'price', 'discount', 'ratingScore',
+#         'review' , 'description', 'brandName', 'sellerName']
+
+keys = ['name']
 
 def get_products(data):
     products = []

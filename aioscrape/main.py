@@ -1,9 +1,10 @@
 import asyncio
+import csv
 from aiohttp import ClientSession
-from aioscrape.urls import urls
-from pprint import pprint
-from aioscrape.daraz import get_products
 
+from aioscrape.urls import urls
+from aioscrape.daraz import get_products
+from aioscrape.utils import process
 
 async def scrape(url, session):
     resp = await session.request(method="GET", url=url)
@@ -31,10 +32,16 @@ async def start():
                 data = await resp.json()
                 results[task.idx] = data
 
-        products = {
-            url: get_products(results[url]) for url in results
-        }
-        pprint(products)
+        products = []
+        for url in results:
+            products.extend(get_products(results[url]))
+        
+        with open('aioscrape/csv/products.csv', 'w+') as file:
+            writer = csv.DictWriter(file, fieldnames=['name'])
+            writer.writeheader()
+            writer.writerows(products)
+
+        process(input_file='aioscrape/csv/products.csv')
 
 if __name__ == '__main__':
     asyncio.run(start())
