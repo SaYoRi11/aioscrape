@@ -1,8 +1,8 @@
 import asyncio
 from aiohttp import ClientSession
-from urls import urls
-from bs4 import BeautifulSoup
+from aioscrape.urls import urls
 from pprint import pprint
+from aioscrape.daraz import get_products
 
 
 async def scrape(url, session):
@@ -28,11 +28,13 @@ async def start():
                 exceptions[task.idx] = exc
             else:
                 resp = task.result()
-                html = await resp.text()
-                results[task.idx] = html
+                data = await resp.json()
+                results[task.idx] = data
 
-        pprint(exceptions)
-        pprint(results)
+        products = {
+            url: get_products(results[url]) for url in results
+        }
+        pprint(products)
 
 if __name__ == '__main__':
     asyncio.run(start())
