@@ -7,40 +7,22 @@ units = ("gm", "gram", "g", "grams", "gms",
         "k", "kg", "kilo", "kilogram", "kilograms", "kgs",
         "pcs", "pieces", 'pc', 'piece',
          "l", "ml", "litres", "litre", "millilitres", "millilitre"
-    )
-
-def process(input_file, output_file='aioscrape/csv/quantities.csv'):
-    with open(input_file) as file:
-        reader = csv.reader(file)
-        next(reader, None)
-        new_rows = []
-        for row in reader:
-            quantities = parse_quantities(row[0])
-            if not quantities:
-                new_rows.append({
-                    'name': row[0],
-                    'amount': None,
-                    'unit': None
-                })
-            else:
-                for q in quantities:
-                    new_rows.append({
-                        'name': row[0],
-                        'amount': q[0],
-                        'unit': q[1]
-                    })
-            
+    )       
     
-    with open(output_file, 'w+') as file:
-        writer = csv.DictWriter(file, fieldnames=['name', 'amount', 'unit'])
-        writer.writeheader()
-        writer.writerows(new_rows)
-
 
 def parse_quantities(text):
     matches = re.findall(QUANTITY_REGEX, text)
     return [(match[0].strip(), match[1].strip()) for match in matches if match[1].lower() in units]
 
 
-if __name__ == '__main__':
-    process(input_file='aioscrape/csv/products.csv')
+def write_to_csv(file, data, fieldnames):
+    with open(file, 'w+') as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(data)
+
+
+async def request(url, session):
+    resp = await session.request(method="GET", url=url)
+    resp.raise_for_status()
+    return resp

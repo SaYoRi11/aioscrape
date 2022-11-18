@@ -5,7 +5,7 @@ keys = ['name']
 
 def get_products(data):
     products = []
-    for item in data['mods']['listItems']:
+    for item in data['mods'].get('listItems', []):
         products.append({
             key: item.get(key, None) for key in keys
         })
