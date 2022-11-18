@@ -25,13 +25,19 @@ async def scrape(url, session, products_file):
             results[task.idx] = data
 
     products = get_products(results[url])
+    if not products:
+        print('Nothing found!')
+        return
     write_to_csv(products_file, products, fieldnames=['name'])
 
 
 def process(input_file, output_file='aioscrape/csv/quantities.csv'):
-    print('Processing...')
+    if not input_file.split('/')[-1] in os.listdir('aioscrape/csv'):
+        return
     with open(input_file) as file:
         reader = csv.reader(file)
+        print('Processing...')
+        # Skip the header row
         next(reader, None)
         new_rows = []
         for row in reader:
@@ -55,7 +61,7 @@ def process(input_file, output_file='aioscrape/csv/quantities.csv'):
 async def start(term):
     url = f'https://www.daraz.com.np/catalog/?q={term}&ajax=true'
     products_file = f'aioscrape/csv/{term}.csv'
-    
+
     async with ClientSession() as session:
         if not f'{term}.csv' in os.listdir('aioscrape/csv'):
             await scrape(url, session, products_file)    
@@ -65,4 +71,4 @@ async def start(term):
 
 
 if __name__ == '__main__':
-    asyncio.run(start('daal'))
+    asyncio.run(start('nuts'))
