@@ -1,18 +1,17 @@
 import csv
 import re
+from aioscrape.units import units
 
 QUANTITY_REGEX = r'(\d[\d,X ]*\.?\d*)(\w+)'
-
-units = ("gm", "gram", "g", "grams", "gms",
-        "k", "kg", "kilo", "kilogram", "kilograms", "kgs",
-        "pcs", "pieces", 'pc', 'piece',
-         "l", "ml", "litres", "litre", "millilitres", "millilitre"
-    )       
-    
+           
 
 def parse_quantities(text):
     matches = re.findall(QUANTITY_REGEX, text)
-    return [(match[0].strip(), match[1].strip()) for match in matches if match[1].lower() in units]
+    quantities = []
+    for match in matches:
+        if match[1].lower() in units:
+            quantities.append((match[0].strip(), units[match[1].lower()]))       
+    return quantities
 
 
 def write_to_csv(file, data, fieldnames):

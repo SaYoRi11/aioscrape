@@ -31,8 +31,8 @@ async def scrape(url, session, products_file):
     write_to_csv(products_file, products, fieldnames=['name'])
 
 
-def process(input_file, output_file='aioscrape/csv/quantities.csv'):
-    if not input_file.split('/')[-1] in os.listdir('aioscrape/csv'):
+def process(input_file, output_file):
+    if not os.path.exists(input_file):
         return
     with open(input_file) as file:
         reader = csv.reader(file)
@@ -59,16 +59,19 @@ def process(input_file, output_file='aioscrape/csv/quantities.csv'):
 
 
 async def start(term):
+    if not term:
+        return
+        
     url = f'https://www.daraz.com.np/catalog/?q={term}&ajax=true'
-    products_file = f'aioscrape/csv/{term}.csv'
+    products_file = f'aioscrape/csv/raw/{term}.csv'
 
-    async with ClientSession() as session:
-        if not f'{term}.csv' in os.listdir('aioscrape/csv'):
+    if not os.path.exists(products_file):
+        async with ClientSession() as session:
             await scrape(url, session, products_file)    
 
-    output_file = f'aioscrape/csv/{term}_quantities.csv'
+    output_file = f'aioscrape/csv/processed/{term}_quantities.csv'
     process(input_file=products_file, output_file=output_file)
 
 
 if __name__ == '__main__':
-    asyncio.run(start('nuts'))
+    asyncio.run(start('canned foods'))

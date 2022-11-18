@@ -12,10 +12,10 @@ def test_quantities():
 
     quantities = [parse_quantities(text) for text in texts]
     assert quantities[0] == [('1.5', 'kg')]
-    assert quantities[1] == [('5 X 100', 'gm'), ('2', 'pc')]
+    assert quantities[1] == [('5 X 100', 'g'), ('2', 'pcs')]
     assert quantities[2] == [('10', 'g')]
-    assert quantities[3] == [('65', 'Gm')]
-    assert quantities[4] == [('400', 'gm'), ('1', 'Pcs')]
+    assert quantities[3] == [('65', 'g')]
+    assert quantities[4] == [('400', 'g'), ('1', 'pcs')]
     assert quantities[5] == [('500', 'ml')]
 
 if __name__ == '__main__':
