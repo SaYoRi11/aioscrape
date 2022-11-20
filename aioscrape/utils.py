@@ -1,8 +1,8 @@
 import csv
 import re
-from aioscrape.units import units
+from aioscrape.units import units, normalize
 
-QUANTITY_REGEX = r'(\d[\d,X ]*\.?\d*)(\w+)'
+QUANTITY_REGEX = r'(\d[\d,]*\.?\d*) ?(\w+)'
            
 
 def parse_quantities(text):
@@ -10,7 +10,12 @@ def parse_quantities(text):
     quantities = []
     for match in matches:
         if match[1].lower() in units:
-            quantities.append((match[0].strip(), units[match[1].lower()]))       
+            amount = float(match[0].strip().replace(',', ''))
+            unit = units[match[1].lower()]
+            if unit in normalize:
+                amount = amount * normalize[unit]['factor']
+                unit = normalize[unit]['convert_to']
+            quantities.append((amount, unit))       
     return quantities
 
 

@@ -74,4 +74,4 @@ async def start(term):
 
 
 if __name__ == '__main__':
-    asyncio.run(start('canned foods'))
+    asyncio.run(start('rice'))
