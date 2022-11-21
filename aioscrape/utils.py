@@ -26,7 +26,7 @@ def write_to_csv(file, data, fieldnames):
         writer.writerows(data)
 
 
-async def request(url, session):
-    resp = await session.request(method="GET", url=url)
+async def request(url, session, method="GET", headers={}):
+    resp = await session.request(method=method, url=url, headers=headers)
     resp.raise_for_status()
     return resp

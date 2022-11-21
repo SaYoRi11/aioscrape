@@ -2,7 +2,7 @@ import os
 import asyncio
 import csv
 
-from aioscrape.main import start
+from aioscrape.daraz.main import start
 
 def test_start():
     input_path = 'aioscrape/csv/raw/canned foods.csv'

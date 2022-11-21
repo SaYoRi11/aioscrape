@@ -3,7 +3,7 @@ import csv
 import os
 from aiohttp import ClientSession
 
-from aioscrape.daraz import get_products
+from aioscrape.daraz.scrape import get_products
 from aioscrape.utils import parse_quantities, request, write_to_csv
 
 
