@@ -2,8 +2,7 @@ import asyncio
 from aiohttp import ClientSession
 
 from aioscrape.utils import request
-from aioscrape.twitter.helpers import get_guest_token
-import os
+from aioscrape.twitter.token import get_guest_token
 
 authorization_token = 'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA'
 
@@ -41,29 +40,16 @@ async def scrape(session, profiles, gt):
     return results
 
 
-async def get_gt_and_scrape(session, profiles):
-    gt = await get_guest_token(session, authorization_token)
-    bios = await scrape(session, profiles, gt)
-    with open('aioscrape/twitter/gt', 'w+') as f:
-        f.write(gt)
-    return bios
-
-
 async def scrape_bio(profiles):
     if not profiles:
         return {}
 
     async with ClientSession() as session:
-        gt_path = 'aioscrape/twitter/gt'
-        if os.path.exists(gt_path):
-            with open('aioscrape/twitter/gt') as f:
-                gt = f.read()
-        
-            bios = await scrape(session, profiles, gt)   
-            if not bios:
-                bios = await get_gt_and_scrape(session, profiles)
-        else:
-            bios = await get_gt_and_scrape(session, profiles)
+        gt = await get_guest_token(session, authorization_token)
+        bios = await scrape(session, profiles, gt)   
+        if not bios:
+            gt = await get_guest_token(session, authorization_token, new=True)
+            bios = await scrape(session, profiles, gt)
         return bios
 
 
